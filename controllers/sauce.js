@@ -75,7 +75,7 @@ exports.modifySauce = async (req, res) => {
 exports.likeSauce = async (req, res) => {
     try {
         const sauce = await Sauce.findOne({ _id: req.params.id });
-        console.log(req.body);
+        console.log(req.body.like);
         if (req.body.like === 1 && !sauce.usersLiked.includes(req.body.userId)) {
             sauce.likes++;
             sauce.usersLiked.push(req.body.userId);
@@ -85,7 +85,7 @@ exports.likeSauce = async (req, res) => {
         }
 
         if (req.body.like === -1 && !sauce.usersDisliked.includes(req.body.userId)) {
-            sauce.likes--;
+            sauce.disLikes++;
             sauce.usersDisliked.push(req.body.userId);
             sauce.save();
             res.status(200).json({message: 'Vote pris en compte'});
@@ -102,7 +102,7 @@ exports.likeSauce = async (req, res) => {
         }
 
         if (req.body.like === 0 && sauce.usersDisliked.includes(req.body.userId)) {
-            sauce.likes++;
+            sauce.disLikes--;
             const index = usersDisliked.findIndex(el => el === req.body.userId);
             sauce.usersDisliked.splice(index, 1);
             sauce.save();
