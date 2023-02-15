@@ -39,6 +39,7 @@ exports.deleteSauce = async (req, res) => {
         const sauce = await Sauce.findOne({ _id: req.params.id });
         if (sauce.userId !== req.auth.userId) res.status(401).json({ message: 'Not authorized' });
         const filename = sauce.imageUrl.split('/images/')[1];
+        console.log(filename);
         fs.unlink(`images/${filename}`, async () => {
             try {
                 await Sauce.deleteOne({_id: req.params.id});
