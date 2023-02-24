@@ -6,7 +6,7 @@ exports.getAllSauces = async (req, res) => {
         const sauces = await Sauce.find();
         res.status(200).json(sauces);
     } catch (error) {
-        res.status(400).json(error);
+        res.status(error.statusCode).json(error);
     }
 }
 
@@ -15,7 +15,7 @@ exports.getOneSauce = async (req, res) => {
         const sauce = await Sauce.findOne({_id: req.params.id });
         res.status(200).json(sauce);
     } catch (error) {
-        res.status(404).json(error);
+        res.status(error.statusCode).json(error);
     }
 }
 
@@ -30,14 +30,17 @@ exports.createSauce = async (req, res) => {
         await sauce.save();
         res.status(201).json({ message: 'Sauce enregistrée !'});
     } catch(error) {
-        res.status(400).json({ error });
+        res.status(error.statusCode).json({ error });
     }
 }
 
 exports.deleteSauce = async (req, res) => {
     try {
         const sauce = await Sauce.findOne({ _id: req.params.id });
-        if (sauce.userId !== req.auth.userId) res.status(401).json({ message: 'Not authorized' });
+        if (sauce.userId !== req.auth.userId) {
+            res.status(401).json({ message: 'Not authorized' });
+            return;
+        }
         const filename = sauce.imageUrl.split('/images/')[1];
         console.log(filename);
         fs.unlink(`images/${filename}`, async () => {
@@ -45,11 +48,11 @@ exports.deleteSauce = async (req, res) => {
                 await Sauce.deleteOne({_id: req.params.id});
                 res.status(200).json({ message: 'Sauce supprimée' });
             } catch (error) {
-                res.status(401).json({error});
+                res.status(error.statusCode).json({error});
             }
         });
     } catch (error) {
-        res.status(500).json({error});
+        res.status(error.statusCode).json({error});
     }
 }
 
@@ -61,15 +64,18 @@ exports.modifySauce = async (req, res) => {
 
     try {
         const sauce = await Sauce.findOne({ _id: req.params.id });
-        if (sauce.userId !== req.auth.userId) res.status(401).json({ message: 'Not authorized' });
+        if (sauce.userId !== req.auth.userId) {
+            res.status(401).json({ message: 'Not authorized' });
+            return;
+        }
         try {
             await Sauce.updateOne({_id: req.params.id}, {...sauceObject, _id: req.params.id});
             res.status(200).json({message: 'Objet modifié!'})
         } catch (error) {
-            res.status(401).json({error});
+            res.status(error.statusCode).json({error});
         }
     } catch (error) {
-        res.status(400).json({error});
+        res.status(error.statusCode).json({error});
     }
 }
 
@@ -116,6 +122,6 @@ exports.likeSauce = async (req, res) => {
             return;
         }
     } catch (error) {
-        res.status(500).json({error});
+        res.status(error.statusCode).json({error});
     }
 }

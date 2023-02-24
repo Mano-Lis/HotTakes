@@ -1,4 +1,7 @@
+const dotenv = require("dotenv");
+dotenv.config();
 const http = require("http");
+const mongoose = require('mongoose');
 const app = require("./app");
 
 const normalizePort = (val) => {
@@ -45,4 +48,19 @@ server.on("listening", () => {
   console.log("Listening on " + bind);
 });
 
-server.listen(port);
+(async () => {
+  try {
+    await mongoose.connect(
+      `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@clusterhottakes.2ejpcfn.mongodb.net/?retryWrites=true&w=majority`,
+      {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      }
+    );
+    console.log("Connexion à MongoDB réussie !");
+    server.listen(port);
+  } catch (error) {
+    console.log("Connexion à MongoDB échouée !", error);
+  }
+})();
+

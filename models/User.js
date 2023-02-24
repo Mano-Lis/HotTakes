@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const MongooseErrors = require('mongoose-errors');
 const validator = require('validator');
 const uniqueValidator = require('mongoose-unique-validator');
 
@@ -9,7 +10,7 @@ const userSchema = mongoose.Schema({
         unique: true, 
         lowercase: true,
         validate: {
-            validator: (email) => validator.isEmail(email)
+            validator: validator.isEmail
         },
         message: props => `${props.value} is not a valid email!`
     },
@@ -21,5 +22,6 @@ const userSchema = mongoose.Schema({
 });
 
 userSchema.plugin(uniqueValidator);
+userSchema.plugin(MongooseErrors);
 
 module.exports = mongoose.model('User', userSchema);
