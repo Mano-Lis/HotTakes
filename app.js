@@ -3,6 +3,7 @@ const userRoutes = require('./routes/user');
 const saucesRoutes = require('./routes/sauce');
 const path = require('path');
 const cors = require('cors');
+const helmet = require('helmet');
 
 
 
@@ -13,6 +14,13 @@ const corsOptions = {
 }
 
 app.use(cors(corsOptions));
+
+app.use(helmet({
+  crossOriginResourcePolicy: {
+    policy: 'cross-origin'
+  }
+}));
+
 
 app.use(express.json());
 
